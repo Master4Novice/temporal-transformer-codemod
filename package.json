@@ -1,0 +1,53 @@
+{
+  "name": "@master4n/temporal-transformer-codemod",
+  "version": "2.0.0",
+  "description": "Codemod CLI for migrating @master4n/temporal-transformer v1.x format strings (moment.js tokens) to v2.0 (Luxon tokens). Run once on your codebase as part of the v1.x → v2.0 upgrade.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "temporal-transformer-codemod": "./bin/temporal-transformer-codemod.mjs"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "TZ=UTC jest"
+  },
+  "keywords": [
+    "codemod",
+    "temporal-transformer",
+    "moment-to-luxon",
+    "migration",
+    "format-tokens",
+    "jscodeshift"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Master4Novice/common.git",
+    "directory": "packages/temporal-transformer-codemod"
+  },
+  "author": "dwivna",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "jscodeshift": "^0.16.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/jscodeshift": "^0.12.0",
+    "@types/node": "^22.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.0",
+    "typescript": "^5.8.3"
+  }
+}
