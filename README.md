@@ -1,6 +1,9 @@
 # @master4n/temporal-transformer-codemod
 
 [![npm version](https://img.shields.io/npm/v/%40master4n%2Ftemporal-transformer-codemod)](https://www.npmjs.com/package/@master4n/temporal-transformer-codemod)
+[![License: MIT](https://img.shields.io/npm/l/%40master4n%2Ftemporal-transformer-codemod)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/Master4Novice/temporal-transformer-codemod/actions/workflows/ci.yml/badge.svg)](https://github.com/Master4Novice/temporal-transformer-codemod/actions/workflows/ci.yml)
+[![Node](https://img.shields.io/node/v/%40master4n%2Ftemporal-transformer-codemod)](https://nodejs.org/)
 
 One-shot codemod CLI for migrating [`@master4n/temporal-transformer`](https://www.npmjs.com/package/@master4n/temporal-transformer) callers from v1.x (moment.js tokens) to v2.0 (Luxon tokens).
 

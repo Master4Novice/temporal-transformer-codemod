@@ -1,6 +1,6 @@
 {
   "name": "@master4n/temporal-transformer-codemod",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Codemod CLI for migrating @master4n/temporal-transformer v1.x format strings (moment.js tokens) to v2.0 (Luxon tokens). Run once on your codebase as part of the v1.x → v2.0 upgrade.",
   "type": "module",
   "main": "./dist/index.js",
@@ -28,9 +28,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Master4Novice/common.git",
-    "directory": "packages/temporal-transformer-codemod"
+    "url": "git+https://github.com/Master4Novice/temporal-transformer-codemod.git"
   },
+  "bugs": {
+    "url": "https://github.com/Master4Novice/temporal-transformer-codemod/issues"
+  },
+  "homepage": "https://github.com/Master4Novice/temporal-transformer-codemod#readme",
   "author": "dwivna",
   "license": "MIT",
   "publishConfig": {
