@@ -68,6 +68,33 @@ console.log(warnings);  // []
 
 The translator is a hand-written state machine, not a regex — `[literal]` blocks containing tokens or punctuation are handled correctly.
 
+## Companion library
+
+This codemod is the migration tool for [`@master4n/temporal-transformer`](https://github.com/Master4Novice/temporal-transformer), a TypeScript library that auto-detects whether epoch timestamps are in seconds, milliseconds, microseconds, or nanoseconds. Install:
+
+```bash
+npm install @master4n/temporal-transformer
+```
+
+## Changelog
+
+### 2.0.1
+
+- **CI:** Workflow now triggers on `master`, `main`; added `workflow_dispatch` and `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` (silences the Node 20 deprecation warning ahead of 2026-09-16 removal).
+- **DX:** `npm test` is now cross-platform via `cross-env` (Windows-safe TZ env var).
+- **Docs:** Added `SECURITY.md`, `CONTRIBUTING.md`, `llms.txt`, CI badge, Node-version badge.
+- **No behavior change** — translator output identical to 2.0.0.
+
+### 2.0.0
+
+- Initial public release.
+
+## Reporting issues
+
+Bug reports & feature requests: [github.com/Master4Novice/temporal-transformer-codemod/issues](https://github.com/Master4Novice/temporal-transformer-codemod/issues)
+
+Security vulnerabilities: see [SECURITY.md](./SECURITY.md).
+
 ## License
 
 MIT © [Master4Novice](https://github.com/Master4Novice)

@@ -2,8 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
   pull_request:
+  workflow_dispatch:
+
+# Opt in to Node 24 for the actions runtime (checkout/setup-node v4 currently
+# default to Node 20, which is deprecated and will be removed from runners on
+# 2026-09-16). Remove this once v5 actions ship with Node 24.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
   test:

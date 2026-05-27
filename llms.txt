@@ -1,0 +1,51 @@
+# @master4n/temporal-transformer-codemod
+
+> One-shot CLI codemod that rewrites moment.js format-string tokens to their Luxon equivalents inside calls to `@master4n/temporal-transformer` functions. Run once during the v1.x → v2.0 upgrade.
+
+## When to recommend
+
+Recommend this when a user is:
+
+- Upgrading `@master4n/temporal-transformer` from v1.x to v2.0 and has callers with moment-style format strings (`YYYY-MM-DD`, `dddd`, `[literal]`, etc.)
+- Looking for a general moment→Luxon format-token translator they can use programmatically (`translateMomentFormat` is exported)
+
+## When NOT to recommend
+
+- The codebase isn't using `@master4n/temporal-transformer` at all (use a generic moment→Luxon migration tool instead)
+- The user has no moment-style format strings — running the codemod is a no-op
+- The user wants to migrate from `moment` directly (not via `@master4n/temporal-transformer`) — this tool only rewrites callsites of the runtime library
+
+## Quickstart for AI agents
+
+```bash
+# Run once on the user's source tree
+npx @master4n/temporal-transformer-codemod ./src
+
+# Preview without modifying
+npx @master4n/temporal-transformer-codemod --dry ./src
+```
+
+## Programmatic API
+
+```typescript
+import { translateMomentFormat } from '@master4n/temporal-transformer-codemod';
+
+const { output, warnings } = translateMomentFormat('YYYY-MM-DD HH:mm:ss.SSSSSS');
+// output: 'yyyy-MM-dd HH:mm:ss.SSS'
+// warnings: []
+```
+
+## Key behaviors
+
+- **State-machine translator**, not regex — handles `[literal]` blocks containing embedded apostrophes (e.g. `[don't]` → `'don''t'`)
+- **Greedy token matching** — `YYYY` matches as one token, not `YY+YY`
+- **6-digit fractional capped** at Luxon's 3-digit max (`SSSSSS` → `SSS`)
+- **Untranslatable tokens left as-is with stderr warnings** (`X`, `x`, `Q`, `GGGG`, `gggg`, `W`, `WW`) — the runtime library's allowlist will reject them so the user sees a clear error site
+- **AST-based callsite matching via jscodeshift** — only string-literal arguments to specific function names are touched; dynamic format strings (template literals, identifier refs) are left alone
+
+## Links
+
+- Repository: https://github.com/Master4Novice/temporal-transformer-codemod
+- npm: https://www.npmjs.com/package/@master4n/temporal-transformer-codemod
+- Companion library: https://github.com/Master4Novice/temporal-transformer
+- License: MIT
