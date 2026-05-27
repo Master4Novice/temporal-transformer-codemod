@@ -5,22 +5,37 @@
 [![CI](https://github.com/Master4Novice/temporal-transformer-codemod/actions/workflows/ci.yml/badge.svg)](https://github.com/Master4Novice/temporal-transformer-codemod/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/node/v/%40master4n%2Ftemporal-transformer-codemod)](https://nodejs.org/)
 
-One-shot codemod CLI for migrating [`@master4n/temporal-transformer`](https://www.npmjs.com/package/@master4n/temporal-transformer) callers from v1.x (moment.js tokens) to v2.0 (Luxon tokens).
+One-shot codemod CLI for migrating [`@master4n/temporal-transformer`](https://www.npmjs.com/package/@master4n/temporal-transformer) callers from **v1.x (last legacy release: `1.3.0`)** to **v2.0.2** (Luxon-backed).
 
-You only need this once, during the v1.x → v2.0 upgrade. After that you can remove the dep.
+You only need this once, during the upgrade. After that you can uninstall the codemod.
 
-## Usage
+## Why you need this
+
+`@master4n/temporal-transformer` v2.0 swapped its internal engine from moment.js to Luxon. The public API surface is unchanged — every function, type, and error code from v1.x still exists — but **format-string grammar changed** (moment tokens → Luxon tokens) and the **default format dropped from 6-digit to 3-digit fractional seconds**. Without this codemod, every format string in your codebase needs manual rewriting.
+
+## Quickstart
 
 ```bash
-# Preview the changes
+# Preview what would change (recommended first run)
 npx @master4n/temporal-transformer-codemod --dry ./src
 
 # Apply
 npx @master4n/temporal-transformer-codemod ./src
 
+# Also bump @master4n/temporal-transformer in package.json files to ^2.0.2
+npx @master4n/temporal-transformer-codemod --update-deps ./
+
 # Multiple paths
 npx @master4n/temporal-transformer-codemod ./src ./test ./scripts
 ```
+
+## CLI options
+
+| Flag             | Purpose |
+|------------------|---------|
+| `--dry`          | Preview changes without modifying files. Prints a diff per file. |
+| `--update-deps`  | Find every `package.json` under the target paths (skipping `node_modules`, `dist`, `build`, `.git`, etc.) and bump `@master4n/temporal-transformer` in `dependencies` / `devDependencies` / `peerDependencies` / `optionalDependencies` to `^2.0.2`. Idempotent. |
+| `--help`, `-h`   | Show usage. |
 
 ## What it does
 
@@ -33,50 +48,106 @@ For every `.ts`, `.tsx`, `.js`, `.jsx` file under the target path, the codemod f
 
 …and rewrites the format-string argument from moment-style to Luxon-style:
 
-| Before (v1.x) | After (v2.0) |
-|---|---|
-| `'YYYY-MM-DD'` | `'yyyy-MM-dd'` |
-| `'YYYY-MM-DD HH:mm:ss.SSSSSS'` | `'yyyy-MM-dd HH:mm:ss.SSS'` |
-| `'dddd, MMMM D YYYY'` | `'cccc, LLLL d yyyy'` |
-| `'DD/MM/YYYY'` | `'dd/MM/yyyy'` |
-| `'[Date:] YYYY-MM-DD'` | `"'Date:' yyyy-MM-dd"` |
-| `"YYYY-[don't] DD"` | `"yyyy-'don''t' dd"` |
+| Before (v1.x)                       | After (v2.0.2)                  |
+|-------------------------------------|---------------------------------|
+| `'YYYY-MM-DD'`                      | `'yyyy-MM-dd'`                  |
+| `'YYYY-MM-DD HH:mm:ss.SSSSSS'`      | `'yyyy-MM-dd HH:mm:ss.SSS'`     |
+| `'dddd, MMMM D YYYY'`               | `'cccc, LLLL d yyyy'`           |
+| `'DD/MM/YYYY'`                      | `'dd/MM/yyyy'`                  |
+| `` `YYYY-MM-DD` ``                  | `` `yyyy-MM-dd` ``              |
+| `'[Date:] YYYY-MM-DD'`              | `"'Date:' yyyy-MM-dd"`          |
+| `"YYYY-[don't] DD"`                 | `"yyyy-'don''t' dd"`            |
 
-It correctly handles:
+Format strings are recognized whether they are:
 
-- Greedy token matching (matches `YYYY` not `YY+YY`).
-- The 6-digit fractional cap (B1): `SSSSSS` → `SSS`.
-- Moment's `[literal]` escape → Luxon's `'literal'`, with proper `''`-escaping of embedded apostrophes.
-- Pre-existing Luxon-style `'literal'` blocks (leaves them alone).
+- Plain string literals: `'YYYY-MM-DD'` or `"YYYY-MM-DD"`
+- Untemplated template literals: `` `YYYY-MM-DD` `` (no `${...}` interpolations)
+
+The codemod correctly handles:
+
+- **Greedy token matching** — `YYYY` matches as one token, not `YY + YY`.
+- **6-digit fractional cap (B1)** — moment's `SSSSSS` (always zero-padded fiction in JS) collapses to Luxon's `SSS`.
+- **Moment's `[literal]` escape → Luxon's `'literal'`**, with proper `''` doubling of embedded apostrophes.
+- **Pre-existing Luxon-style `'literal'` blocks** — left alone.
 
 It does **not** translate:
 
-- Dynamic format strings (template literals, identifier references). These are left as-is — you need to update them manually.
-- Untranslatable moment-only tokens (`X`, `x`, `Q`, `GGGG`, `gggg`, `W`, `WW`). These remain in the output and the CLI prints a stderr warning. The runtime allowlist in v2.0 will throw `FormatInvalid` on those, so you cannot ship the wrong code by accident.
+- **Dynamic format strings** — template literals *with* `${...}` interpolations, identifier references, member access expressions. These are left unchanged for manual review.
+- **Untranslatable moment-only tokens** — `X` (unix seconds), `x` (unix milliseconds), `Q` (quarter), `GGGG`, `gggg`, `W`, `WW`. These remain in the output and a stderr warning is printed. The v2.0 runtime allowlist throws `FormatInvalid` on those at execution time, so the wrong code cannot ship silently — but you should replace them with the dedicated API:
+  - `X` → use the result's `epochInSeconds` field
+  - `x` → use `epochInMilliseconds`
+
+## Migration walkthrough (v1.3.0 → v2.0.2)
+
+```bash
+# 1. Preview every change
+npx @master4n/temporal-transformer-codemod --dry ./src ./test
+
+# 2. Apply source rewrites and bump package.json in one pass
+npx @master4n/temporal-transformer-codemod --update-deps ./
+
+# 3. Install the new version
+npm install
+
+# 4. Run your tests — most code now works unchanged
+npm test
+```
+
+After the codemod completes, review the stderr warnings for any untranslatable tokens, then remove the codemod itself:
+
+```bash
+npm uninstall @master4n/temporal-transformer-codemod
+```
 
 ## Programmatic API
 
-If you need to integrate the translator into a custom build step:
+If you need to integrate the translator into a custom build step or migration script:
 
 ```typescript
-import { translateMomentFormat } from '@master4n/temporal-transformer-codemod';
+import {
+  translateMomentFormat,
+  bumpPackageJson,
+  findPackageJsons,
+  DEFAULT_TARGET_RANGE,    // '^2.0.2'
+  RUNTIME_LIB_NAME,        // '@master4n/temporal-transformer'
+} from '@master4n/temporal-transformer-codemod';
 
+// Translate a single format string
 const { output, warnings } = translateMomentFormat('YYYY-MM-DD HH:mm:ss');
 console.log(output);    // 'yyyy-MM-dd HH:mm:ss'
 console.log(warnings);  // []
+
+// Bump a single package.json
+const result = bumpPackageJson('./package.json');
+console.log(result.changed);           // true | false
+console.log(result.packageJsonPath);   // absolute path
+
+// Discover package.json files under one or more roots
+const paths = await findPackageJsons(['./packages']);
+for (const p of paths) bumpPackageJson(p);
 ```
 
-The translator is a hand-written state machine, not a regex — `[literal]` blocks containing tokens or punctuation are handled correctly.
+The translator is a hand-written state machine, not a regex — `[literal]` blocks containing tokens or punctuation are handled correctly. The package.json walker skips `node_modules`, `dist`, `build`, `out`, `coverage`, `.next`, `.nuxt`, `.git`, `.idea`, `.vscode`, and any directory starting with `.`.
 
 ## Companion library
 
-This codemod is the migration tool for [`@master4n/temporal-transformer`](https://github.com/Master4Novice/temporal-transformer), a TypeScript library that auto-detects whether epoch timestamps are in seconds, milliseconds, microseconds, or nanoseconds. Install:
+This codemod is the migration tool for [`@master4n/temporal-transformer`](https://github.com/Master4Novice/temporal-transformer), a TypeScript library that auto-detects whether epoch timestamps are in seconds, milliseconds, microseconds, or nanoseconds. Install the v2.0 line with:
 
 ```bash
 npm install @master4n/temporal-transformer
 ```
 
+For details on what changed between v1.x and v2.0, see the runtime library's [MIGRATION.md](https://github.com/Master4Novice/temporal-transformer/blob/master/MIGRATION.md).
+
 ## Changelog
+
+### 2.0.2
+
+- **New:** `--update-deps` flag — bumps `@master4n/temporal-transformer` in every `package.json` under the target paths from `^1.x` to `^2.0.2`. Handles `dependencies`, `devDependencies`, `peerDependencies`, and `optionalDependencies`. Idempotent.
+- **New:** Format strings written as no-expression template literals (`` `YYYY-MM-DD` ``) are now recognized and rewritten. Template literals with `${...}` expressions are still skipped for safety.
+- **New:** Programmatic API — `bumpPackageJson`, `findPackageJsons`, `DEFAULT_TARGET_RANGE`, `RUNTIME_LIB_NAME` are exported alongside `translateMomentFormat` and `transformer`.
+- **Tests:** 50 tests (up from 27). Added integration-style tests for the jscodeshift transformer and full coverage of the package.json bumper.
+- **No behavior change for existing callers** — every prior translation pair still passes its test.
 
 ### 2.0.1
 
