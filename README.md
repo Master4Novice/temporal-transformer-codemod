@@ -141,13 +141,24 @@ For details on what changed between v1.x and v2.0, see the runtime library's [MI
 
 ## Changelog
 
+### 2.0.3
+
+- **Build:** Switched from raw `tsc` to a Rollup setup matching [`@master4n/temporal-transformer`](https://github.com/Master4Novice/temporal-transformer). Three standalone bundles + one bundled `.d.ts`:
+  - `dist/index.js` — bundled programmatic API
+  - `dist/codemod.js` — standalone (jscodeshift's Runner requires a file path)
+  - `dist/updateDeps.js` — standalone (the bin script `await import()`s it)
+  - `dist/index.d.ts` — bundled types via `rollup-plugin-dts`
+- **Publish flow:** Now publishes from `dist/` via `publishConfig.directory`. The shipped `package.json` strips `scripts`, `devDependencies`, `publishConfig`, and `gitHead`. Paths in the published `main`/`types`/`bin` are flat (no `./dist/` prefix) so consumers `npm install` a clean tree.
+- **CI fix:** Windows path bug in `test/updateDeps.test.ts` (was using `'/'` for `lastIndexOf` — now uses `path.dirname()`).
+- **CI fix:** CommonJS `jscodeshift` import in `test/codemod.test.ts` is now resilient under ts-jest's ESM mode (namespace import with synthetic default fallback).
+- **DX:** Jest now ignores `dist/` via `modulePathIgnorePatterns` so bundled output isn't accidentally treated as a test target.
+- **No API change** — translator output, CLI flags, and programmatic exports identical to 2.0.2.
+
 ### 2.0.2
 
 - **New:** `--update-deps` flag — bumps `@master4n/temporal-transformer` in every `package.json` under the target paths from `^1.x` to `^2.0.2`. Handles `dependencies`, `devDependencies`, `peerDependencies`, and `optionalDependencies`. Idempotent.
 - **New:** Format strings written as no-expression template literals (`` `YYYY-MM-DD` ``) are now recognized and rewritten. Template literals with `${...}` expressions are still skipped for safety.
 - **New:** Programmatic API — `bumpPackageJson`, `findPackageJsons`, `DEFAULT_TARGET_RANGE`, `RUNTIME_LIB_NAME` are exported alongside `translateMomentFormat` and `transformer`.
-- **Build:** Switched from raw `tsc` to a Rollup setup matching `@master4n/temporal-transformer`. Publishes from `dist/` with `publishConfig.directory`; the published `package.json` no longer ships `scripts`, `devDependencies`, or `publishConfig`. Bundled `dist/index.d.ts` provides a single types entry for the programmatic API.
-- **CI fix:** Windows path bug in `updateDeps.test.ts` (was using `'/'` for `lastIndexOf` — now uses `path.dirname`). CommonJS `jscodeshift` import is now resilient under ts-jest ESM mode.
 - **Tests:** 50 tests (up from 27). Added integration-style tests for the jscodeshift transformer and full coverage of the package.json bumper.
 - **No behavior change for existing callers** — every prior translation pair still passes its test.
 
