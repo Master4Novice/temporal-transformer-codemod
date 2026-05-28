@@ -3,7 +3,14 @@
 // argument-extraction logic on real source fragments.
 
 import transformer from '../src/codemod.js';
-import jscodeshift from 'jscodeshift';
+import * as jscodeshiftModule from 'jscodeshift';
+
+// jscodeshift is published as CommonJS. A default import works in plain
+// Node ESM (synthetic default export) but is fragile under ts-jest's ESM
+// mode. The namespace-import-then-pick-default pattern works in both.
+const jscodeshift = (
+  (jscodeshiftModule as unknown as { default?: unknown }).default ?? jscodeshiftModule
+) as { withParser: (parser: string) => unknown };
 
 function runCodemod(source: string): string {
   const fileInfo = { path: '/test/in.ts', source };

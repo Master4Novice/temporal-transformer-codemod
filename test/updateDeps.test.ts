@@ -1,6 +1,6 @@
 import { mkdtempSync, writeFileSync, readFileSync, rmSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import {
   bumpPackageJson,
   findPackageJsons,
@@ -19,7 +19,8 @@ afterEach(() => {
 });
 
 function writePkg(filePath: string, contents: object): string {
-  mkdirSync(filePath.substring(0, filePath.lastIndexOf('/')), { recursive: true });
+  // Use path.dirname so this works on Windows (where separator is '\').
+  mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, JSON.stringify(contents, null, 2) + '\n', 'utf8');
   return filePath;
 }

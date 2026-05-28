@@ -146,6 +146,8 @@ For details on what changed between v1.x and v2.0, see the runtime library's [MI
 - **New:** `--update-deps` flag — bumps `@master4n/temporal-transformer` in every `package.json` under the target paths from `^1.x` to `^2.0.2`. Handles `dependencies`, `devDependencies`, `peerDependencies`, and `optionalDependencies`. Idempotent.
 - **New:** Format strings written as no-expression template literals (`` `YYYY-MM-DD` ``) are now recognized and rewritten. Template literals with `${...}` expressions are still skipped for safety.
 - **New:** Programmatic API — `bumpPackageJson`, `findPackageJsons`, `DEFAULT_TARGET_RANGE`, `RUNTIME_LIB_NAME` are exported alongside `translateMomentFormat` and `transformer`.
+- **Build:** Switched from raw `tsc` to a Rollup setup matching `@master4n/temporal-transformer`. Publishes from `dist/` with `publishConfig.directory`; the published `package.json` no longer ships `scripts`, `devDependencies`, or `publishConfig`. Bundled `dist/index.d.ts` provides a single types entry for the programmatic API.
+- **CI fix:** Windows path bug in `updateDeps.test.ts` (was using `'/'` for `lastIndexOf` — now uses `path.dirname`). CommonJS `jscodeshift` import is now resilient under ts-jest ESM mode.
 - **Tests:** 50 tests (up from 27). Added integration-style tests for the jscodeshift transformer and full coverage of the package.json bumper.
 - **No behavior change for existing callers** — every prior translation pair still passes its test.
 
