@@ -1,7 +1,7 @@
 {
   "name": "@master4n/temporal-transformer-codemod",
-  "version": "2.0.3",
-  "description": "Codemod CLI for migrating @master4n/temporal-transformer callers from v1.x (1.3.0 was the last legacy moment-backed release) to v2.0.2 (Luxon-backed). Rewrites moment-style format-string tokens to Luxon syntax, converts [literal] escapes to 'literal', warns on untranslatable tokens, and can optionally bump the package.json dependency.",
+  "version": "2.0.4",
+  "description": "Codemod CLI for migrating @master4n/temporal-transformer callers from v1.x (1.3.0 was the last legacy moment-backed release) to v2.0.4 (Luxon-backed). Rewrites moment-style format-string tokens to Luxon syntax, converts [literal] escapes to 'literal', warns on untranslatable tokens, and can optionally bump the package.json dependency.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -26,7 +26,7 @@ function writePkg(filePath: string, contents: object): string {
 }
 
 describe('bumpPackageJson', () => {
-  test('bumps dependencies range from ^1.x to ^2.0.2', () => {
+  test('bumps dependencies range from ^1.x to ^2.0.4', () => {
     const pkgPath = writePkg(join(workDir, 'package.json'), {
       name: 'consumer',
       dependencies: { [RUNTIME_LIB_NAME]: '^1.3.0', other: '^5.0.0' },

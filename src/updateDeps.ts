@@ -12,7 +12,7 @@ import { readdir, stat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 const RUNTIME_LIB = '@master4n/temporal-transformer';
-const TARGET_RANGE = '^2.0.2';
+const TARGET_RANGE = '^2.0.4';
 
 const DEP_KEYS = [
   'dependencies',

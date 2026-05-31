@@ -5,7 +5,7 @@
 [![CI](https://github.com/Master4Novice/temporal-transformer-codemod/actions/workflows/ci.yml/badge.svg)](https://github.com/Master4Novice/temporal-transformer-codemod/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/node/v/%40master4n%2Ftemporal-transformer-codemod)](https://nodejs.org/)
 
-One-shot codemod CLI for migrating [`@master4n/temporal-transformer`](https://www.npmjs.com/package/@master4n/temporal-transformer) callers from **v1.x (last legacy release: `1.3.0`)** to **v2.0.2** (Luxon-backed).
+One-shot codemod CLI for migrating [`@master4n/temporal-transformer`](https://www.npmjs.com/package/@master4n/temporal-transformer) callers from **v1.x (last legacy release: `1.3.0`)** to **v2.0.4** (Luxon-backed).
 
 You only need this once, during the upgrade. After that you can uninstall the codemod.
 
@@ -22,7 +22,7 @@ npx @master4n/temporal-transformer-codemod --dry ./src
 # Apply
 npx @master4n/temporal-transformer-codemod ./src
 
-# Also bump @master4n/temporal-transformer in package.json files to ^2.0.2
+# Also bump @master4n/temporal-transformer in package.json files to ^2.0.4
 npx @master4n/temporal-transformer-codemod --update-deps ./
 
 # Multiple paths
@@ -34,7 +34,7 @@ npx @master4n/temporal-transformer-codemod ./src ./test ./scripts
 | Flag             | Purpose |
 |------------------|---------|
 | `--dry`          | Preview changes without modifying files. Prints a diff per file. |
-| `--update-deps`  | Find every `package.json` under the target paths (skipping `node_modules`, `dist`, `build`, `.git`, etc.) and bump `@master4n/temporal-transformer` in `dependencies` / `devDependencies` / `peerDependencies` / `optionalDependencies` to `^2.0.2`. Idempotent. |
+| `--update-deps`  | Find every `package.json` under the target paths (skipping `node_modules`, `dist`, `build`, `.git`, etc.) and bump `@master4n/temporal-transformer` in `dependencies` / `devDependencies` / `peerDependencies` / `optionalDependencies` to `^2.0.4`. Idempotent. |
 | `--help`, `-h`   | Show usage. |
 
 ## What it does
@@ -48,7 +48,7 @@ For every `.ts`, `.tsx`, `.js`, `.jsx` file under the target path, the codemod f
 
 …and rewrites the format-string argument from moment-style to Luxon-style:
 
-| Before (v1.x)                       | After (v2.0.2)                  |
+| Before (v1.x)                       | After (v2.0.4)                  |
 |-------------------------------------|---------------------------------|
 | `'YYYY-MM-DD'`                      | `'yyyy-MM-dd'`                  |
 | `'YYYY-MM-DD HH:mm:ss.SSSSSS'`      | `'yyyy-MM-dd HH:mm:ss.SSS'`     |
@@ -77,7 +77,7 @@ It does **not** translate:
   - `X` → use the result's `epochInSeconds` field
   - `x` → use `epochInMilliseconds`
 
-## Migration walkthrough (v1.3.0 → v2.0.2)
+## Migration walkthrough (v1.3.0 → v2.0.4)
 
 ```bash
 # 1. Preview every change
@@ -108,7 +108,7 @@ import {
   translateMomentFormat,
   bumpPackageJson,
   findPackageJsons,
-  DEFAULT_TARGET_RANGE,    // '^2.0.2'
+  DEFAULT_TARGET_RANGE,    // '^2.0.4'
   RUNTIME_LIB_NAME,        // '@master4n/temporal-transformer'
 } from '@master4n/temporal-transformer-codemod';
 
@@ -140,6 +140,14 @@ npm install @master4n/temporal-transformer
 For details on what changed between v1.x and v2.0, see the runtime library's [MIGRATION.md](https://github.com/Master4Novice/temporal-transformer/blob/master/MIGRATION.md).
 
 ## Changelog
+
+### 2.0.4
+
+- **`--update-deps` now targets `^2.0.4`** (`DEFAULT_TARGET_RANGE`), the latest
+  `@master4n/temporal-transformer` release — which makes the zero-dependency core
+  and rejects ambiguous fractional epochs (`EpochError.NotAnInteger`). Bumping the
+  floor ensures migrated projects pull the fixed runtime. Idempotent as before.
+- **No API or translator change** — CLI flags and programmatic exports unchanged.
 
 ### 2.0.3
 
