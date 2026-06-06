@@ -141,6 +141,13 @@ For details on what changed between v1.x and v2.0, see the runtime library's [MI
 
 ## Changelog
 
+### 2.0.5
+
+- **Packaging:** `llms.txt` is now included in the published tarball (it was
+  present in the repo but not copied into `dist`).
+- **Discoverability:** broadened npm keywords (automated-refactor,
+  dependency-migration, cli) and added a "Part of the @master4n toolkit" section.
+
 ### 2.0.4
 
 - **`--update-deps` now targets `^2.0.4`** (`DEFAULT_TARGET_RANGE`), the latest
@@ -186,6 +193,15 @@ For details on what changed between v1.x and v2.0, see the runtime library's [MI
 Bug reports & feature requests: [github.com/Master4Novice/temporal-transformer-codemod/issues](https://github.com/Master4Novice/temporal-transformer-codemod/issues)
 
 Security vulnerabilities: see [SECURITY.md](./SECURITY.md).
+
+## Part of the @master4n toolkit
+
+A small ecosystem of focused, agent-friendly packages:
+
+- [`@master4n/temporal-transformer`](https://www.npmjs.com/package/@master4n/temporal-transformer) — epoch/timestamp ↔ date conversion with auto unit-detection and IANA timezones (Luxon-backed)
+- [`@master4n/http-status`](https://www.npmjs.com/package/@master4n/http-status) — machine-readable HTTP status-code registry for apps & AI agents
+- [`@master4n/decorators`](https://www.npmjs.com/package/@master4n/decorators) — zero-dependency TypeScript decorators (DI, validation, resilience, redaction)
+- [`@master4n/master-cli`](https://www.npmjs.com/package/@master4n/master-cli) — headless, JSON-first dev CLI (`mfn`) for humans and AI agents
 
 ## License
 

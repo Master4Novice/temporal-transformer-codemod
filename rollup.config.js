@@ -78,7 +78,7 @@ export default [
                 .replace(/resolve\(packageRoot,\s*'dist\/updateDeps\.js'\)/g, "resolve(packageRoot, 'updateDeps.js')");
             },
           },
-          { src: ['README.md', 'LICENSE', 'SECURITY.md'], dest: 'dist' },
+          { src: ['README.md', 'LICENSE', 'SECURITY.md', 'llms.txt'], dest: 'dist' },
           // package.json: strip dev fields, adjust paths so they resolve from
           // inside dist/ (which is what consumers `npm install`).
           {
